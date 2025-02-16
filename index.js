@@ -145,7 +145,39 @@ app.get("/highBP/user/:user_id", async (req, res) => {
     } finally {
         client.release();
     }
-})
+});
+
+// GET user info--endpoint
+
+// POST high_bp data--endpoint
+app.post("/highBP", async (req, res) => {
+    const { user_id, input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
+    const client = await pool.connect();
+
+    try {
+        // Check user's existence
+        const userExists = await client.query(
+            "SELECT * FROM users WHERE id = $1", 
+            [user_id]
+        );
+
+        if (!userExists) {
+            res.status(400).json({ error: "User not found" });
+        }
+
+        const post = await client.query(
+            "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)", 
+            [user_id, input_date, input_time, systolic, dystolic, pulse_rate]
+        );
+
+        res.json(post.rows[0]);
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
 
 // Boilerplate code
 app.get("/", (req, res) => {
