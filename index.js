@@ -124,7 +124,28 @@ app.post("/signin", async (req, res) => {
 //////////////////////////////// REQUEST ENDPOINT ////////////////////////////////
 
 // GET all high_bp posts from specific user --endpoint
+app.get("/highBP/user/:user_id", async (req, res) => {
+    const { user_id } = req.params;
+    const client = await pool.connect();
+    
+    try {
+        const highBPData = await client.query(
+            "SELECT * FROM high_bp WHERE high_bp.user_id = $1", 
+            [user_id]
+        );
 
+        if (highBPData.rowCount > 0) {
+            res.json(highBPData.rows);
+        } else {
+            res.status(404).json({ error: "No data found for this user" });
+        }
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+})
 
 // Boilerplate code
 app.get("/", (req, res) => {
