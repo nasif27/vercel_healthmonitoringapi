@@ -161,7 +161,7 @@ app.post("/highBP", async (req, res) => {
             [user_id]
         );
 
-        if (!userExists) {
+        if (userExists.rows.length = 0) {
             res.status(400).json({ error: "User not found" });
         }
 
