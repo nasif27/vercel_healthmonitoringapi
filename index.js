@@ -166,7 +166,7 @@ app.post("/highBP", async (req, res) => {
         }
 
         const post = await client.query(
-            "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)", 
+            "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
             [user_id, input_date, input_time, systolic, dystolic, pulse_rate]
         );
 
