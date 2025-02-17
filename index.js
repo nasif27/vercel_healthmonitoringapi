@@ -148,6 +148,29 @@ app.get("/highBP/user/:user_id", async (req, res) => {
 });
 
 // GET user info--endpoint
+app.get("/user/:id", async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+    
+    try {
+        // Check user's existence
+        const user = await client.query(
+            "SELECT * FROM users WHERE id = $1", 
+            [id]
+        );
+
+        if (user.rows.length > 0) {
+            res.json(user.rows[0]);
+        } else {
+            res.status(404).json({ error: "user not found" });
+        }
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
 
 // POST high_bp data--endpoint
 app.post("/highBP", async (req, res) => {
