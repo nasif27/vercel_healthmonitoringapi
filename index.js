@@ -172,6 +172,37 @@ app.get("/user/:id", async (req, res) => {
     }
 });
 
+// POST remaining info to user info --endpoint
+app.post("/userinfo/:id", async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+    const { full_name, age, gender, height, weight, ongoing_med } = req.body;
+
+    try {
+        // Check user's existence
+        const userExists = await client.query(
+            "SELECT * FROM users WHERE id = $1", 
+            [id]
+        );
+
+        if (userExists.rows.length > 0) {
+            const userInfo = await client.query(
+                "INSERT INTO users (full_name, age, gender, height, weight, ongoing_med) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
+                [full_name, age, gender, height, weight, ongoing_med]
+            );
+
+            res.json(userInfo.rows[0]);
+        } else {
+            res.status(400).json({ error: "User not found" });
+        }
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
+
 // POST high_bp data--endpoint
 app.post("/highBP", async (req, res) => {
     const { user_id, input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
