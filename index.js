@@ -161,16 +161,16 @@ app.post("/highBP", async (req, res) => {
             [user_id]
         );
 
-        if (userExists.rows.length = 0) {
+        if (userExists.rows.length > 0) {
+            const post = await client.query(
+                "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
+                [user_id, input_date, input_time, systolic, dystolic, pulse_rate]
+            );
+    
+            res.json(post.rows[0]);
+        } else {
             res.status(400).json({ error: "User not found" });
         }
-
-        const post = await client.query(
-            "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
-            [user_id, input_date, input_time, systolic, dystolic, pulse_rate]
-        );
-
-        res.json(post.rows[0]);
     } catch (error) {
         console.log("Error:", error.message);
         res.status(500).json({ error: error.message });
