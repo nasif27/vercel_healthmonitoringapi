@@ -240,7 +240,7 @@ app.put("/highBP/:id", async (req, res) => {
     const { input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
 
     try {
-        // Check user's existence
+        // Check high_bp post's existence
         const postExists = await client.query(
             "SELECT * FROM high_bp WHERE id = $1", 
             [id]
@@ -270,12 +270,22 @@ app.delete("/highBP/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        await client.query(
-            "DELETE FROM high_bp WHERE id = $1", 
+        // Check high_bp post's existence
+        const postExists = await client.query(
+            "SELECT * FROM high_bp WHERE id = $1", 
             [id]
         );
 
-        res.json({ message: "Successfully deleted" });
+        if (postExists.rows.length > 0) {
+            await client.query(
+                "DELETE FROM high_bp WHERE id = $1", 
+                [id]
+            );
+    
+            res.json({ message: "Successfully deleted" });
+        } else {
+            res.status(400).json({ error: "High blood pressure post not found" });
+        }
     } catch (error) {
         console.log("Error:", error.message);
         res.status(500).json({ error: error.message })
