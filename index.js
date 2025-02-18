@@ -147,7 +147,7 @@ app.get("/highBP/user/:user_id", async (req, res) => {
     }
 });
 
-// GET user info--endpoint
+// GET user info --endpoint
 app.get("/user/:id", async (req, res) => {
     const client = await pool.connect();
     const { id } = req.params;
@@ -203,7 +203,7 @@ app.put("/userinfo/:id", async (req, res) => {
     }
 });
 
-// POST high_bp data--endpoint
+// POST high_bp data --endpoint
 app.post("/highBP", async (req, res) => {
     const { user_id, input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
     const client = await pool.connect();
@@ -224,6 +224,37 @@ app.post("/highBP", async (req, res) => {
             res.json(post.rows[0]);
         } else {
             res.status(400).json({ error: "User not found" });
+        }
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+// UPDATE specific high_bp post --endpoint
+app.put("/high_bp/:id", async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+    const { input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
+
+    try {
+        // Check user's existence
+        const postExists = await client.query(
+            "SELECT * FROM high_bp WHERE id = $1", 
+            [id]
+        );
+
+        if (postExists.rows.length > 0) {
+            const updatedPost = await client.query(
+                "UPDATE high_bp SET input_date = $1, input_time = $2, systolic = $3, dystolic = $4, pulse_rate = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *", 
+                [input_date, input_time, systolic, dystolic, pulse_rate, id]
+            );
+    
+            res.json(updatedPost.rows[0]);
+        } else {
+            res.status(400).json({ error: "High blood pressure post not found" });
         }
     } catch (error) {
         console.log("Error:", error.message);
