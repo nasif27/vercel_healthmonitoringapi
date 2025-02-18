@@ -264,6 +264,26 @@ app.put("/highBP/:id", async (req, res) => {
     }
 });
 
+// DELETE specific high_bp post --endpoint
+app.delete("/highBP/:id", async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+
+    try {
+        await client.query(
+            "DELETE FROM high_bp WHERE id = $1", 
+            [id]
+        );
+
+        res.json({ message: "Successfully deleted" });
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message })
+    } finally {
+        client.release();
+    }
+});
+
 // Boilerplate code
 app.get("/", (req, res) => {
     res.status(200).json({ message: "welcome to health monitoring app API" });
