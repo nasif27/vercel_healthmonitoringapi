@@ -172,8 +172,8 @@ app.get("/user/:id", async (req, res) => {
     }
 });
 
-// POST remaining info to user info --endpoint
-app.post("/userinfo/:id", async (req, res) => {
+// UPDATE remaining info to user info --endpoint
+app.put("/userinfo/:id", async (req, res) => {
     const client = await pool.connect();
     const { id } = req.params;
     const { full_name, age, gender, height, weight, ongoing_med } = req.body;
@@ -187,8 +187,8 @@ app.post("/userinfo/:id", async (req, res) => {
 
         if (userExists.rows.length > 0) {
             const userInfo = await client.query(
-                "INSERT INTO users (full_name, age, gender, height, weight, ongoing_med) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", 
-                [full_name, age, gender, height, weight, ongoing_med]
+                "UPDATE users SET full_name = $1, age = $2, gender = $3, height = $4, weight = $5, ongoing_med = $6 WHERE id = $7 RETURNING *", 
+                [full_name, age, gender, height, weight, ongoing_med, id]
             );
 
             res.json(userInfo.rows[0]);
