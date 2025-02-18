@@ -234,7 +234,7 @@ app.post("/highBP", async (req, res) => {
 });
 
 // UPDATE specific high_bp post --endpoint
-app.put("/high_bp/:id", async (req, res) => {
+app.put("/highBP/:id", async (req, res) => {
     const client = await pool.connect();
     const { id } = req.params;
     const { input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
