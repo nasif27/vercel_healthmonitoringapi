@@ -172,6 +172,31 @@ app.get("/user/:id", async (req, res) => {
     }
 });
 
+// GET specific user info --endpoint
+app.get("/userinfo/:id", async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+
+    try {
+        // Check user info existence
+        const userInfo = await client.query(
+            "SELECT full_name, age, gender, height, weight, ongoing_med FROM users WHERE id = $1", 
+            [id]
+        );
+
+        if (userInfo.rows.length > 0) {
+            res.json(userInfo.rows[0]);
+        } else {
+            res.status(400).json({ error: "User not found" });
+        }
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+});
+
 // UPDATE remaining info to user info --endpoint
 app.put("/userinfo/:id", async (req, res) => {
     const client = await pool.connect();
