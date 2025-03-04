@@ -260,7 +260,7 @@ app.put("/userinfo/:id", async (req, res) => {
 
 // POST high_bp data from specific user --endpoint
 app.post("/highBP/user/:id", async (req, res) => {
-    const { user_id } = req.params;
+    const { id } = req.params;
     const { input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
     const client = await pool.connect();
 
@@ -268,13 +268,13 @@ app.post("/highBP/user/:id", async (req, res) => {
         // Check user's existence
         const userExists = await client.query(
             "SELECT * FROM users WHERE id = $1", 
-            [user_id]
+            [id]
         );
 
         if (userExists.rows.length > 0) {
             const post = await client.query(
                 "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
-                [user_id, input_date, input_time, systolic, dystolic, pulse_rate]
+                [id, input_date, input_time, systolic, dystolic, pulse_rate]
             );
     
             res.json(post.rows[0]);
