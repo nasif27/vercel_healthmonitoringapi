@@ -264,8 +264,6 @@ app.post("/highBP/user/:id", async (req, res) => {
     const { input_date, input_time, systolic, dystolic, pulse_rate } = req.body;
     const client = await pool.connect();
 
-    const formattedDate = new Date(input_date).toISOString().split("T")[0];
-
     try {
         // Check user's existence
         const userExists = await client.query(
@@ -274,6 +272,7 @@ app.post("/highBP/user/:id", async (req, res) => {
         );
 
         if (userExists.rows.length > 0) {
+            const formattedDate = new Date(input_date).toISOString().split("T")[0];
             const post = await client.query(
                 "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
                 [id, formattedDate, input_time, systolic, dystolic, pulse_rate]
