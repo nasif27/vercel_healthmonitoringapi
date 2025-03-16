@@ -287,7 +287,7 @@ app.post("/highBP/user/:id", async (req, res) => {
             }));
     
             // res.json(post.rows[0]);
-            res.json(formattedDatePost.rows[0]);
+            res.json(formattedDatePost);
         } else {
             res.status(400).json({ error: "User not found" });
         }
