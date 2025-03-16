@@ -277,12 +277,12 @@ app.post("/highBP/user/:id", async (req, res) => {
                 [id, input_date, input_time, systolic, dystolic, pulse_rate]
             );
 
-            const formattedDatePost = post.rows.map((row) => ({
+            const formattedDatePost = post.rows[0].map((row) => ({
                 ...row, input_date: row.input_date.toISOString().split("T")[0]
             }));
     
             // res.json(post.rows[0]);
-            res.json(formattedDatePost[0]);
+            res.json(formattedDatePost);
         } else {
             res.status(400).json({ error: "User not found" });
         }
