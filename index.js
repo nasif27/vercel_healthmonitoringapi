@@ -281,9 +281,13 @@ app.post("/highBP/user/:id", async (req, res) => {
             // const formattedDatePost = post.rows.map(row => ({
             //     input_date: row.input_date.toISOString().split("T")[0]
             // }));
+
+            const formattedDatePost = post.rows.map((row) => 
+                row.input_date.includes("T00:00:00.000Z") ? { ...row, input_date: row.input_date.toISOString().split("T")[0] } : row
+            );
     
-            res.json(post.rows[0]);
-            // res.json(formattedDatePost);
+            // res.json(post.rows[0]);
+            res.json(formattedDatePost.rows[0]);
         } else {
             res.status(400).json({ error: "User not found" });
         }
