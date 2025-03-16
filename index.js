@@ -272,22 +272,17 @@ app.post("/highBP/user/:id", async (req, res) => {
         );
 
         if (userExists.rows.length > 0) {
-            // const formattedDate = input_date.toISOString().split("T")[0];
             const post = await client.query(
                 "INSERT INTO high_bp (user_id, input_date, input_time, systolic, dystolic, pulse_rate, created_at) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *", 
                 [id, input_date, input_time, systolic, dystolic, pulse_rate]
             );
-
-            // const formattedDatePost = post.rows.map(row => ({
-            //     input_date: row.input_date.toISOString().split("T")[0]
-            // }));
 
             const formattedDatePost = post.rows.map((row) => ({
                 ...row, input_date: row.input_date.toISOString().split("T")[0]
             }));
     
             // res.json(post.rows[0]);
-            res.json(formattedDatePost);
+            res.json(formattedDatePost[0]);
         } else {
             res.status(400).json({ error: "User not found" });
         }
