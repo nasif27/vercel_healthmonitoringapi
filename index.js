@@ -282,9 +282,9 @@ app.post("/highBP/user/:id", async (req, res) => {
             //     input_date: row.input_date.toISOString().split("T")[0]
             // }));
 
-            const formattedDatePost = post.rows.map((row) => 
-                row.input_date.includes("T00:00:00.000Z") ? { ...row, input_date: row.input_date.toISOString().split("T")[0] } : row
-            );
+            const formattedDatePost = post.rows.map((row) => ({
+                ...row, input_date: row.input_date.toISOString().split("T")[0]
+            }));
     
             // res.json(post.rows[0]);
             res.json(formattedDatePost.rows[0]);
