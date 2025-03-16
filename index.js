@@ -135,7 +135,12 @@ app.get("/highBP/user/:user_id", async (req, res) => {
         );
 
         if (highBPData.rowCount > 0) {
-            res.json(highBPData.rows);
+            const formattedDateHighBPData = highBPData.rows.map((row) => ({
+                ...row, input_date: row.input_date.toISOString().split("T")[0]
+            }));
+    
+            res.json(formattedDateHighBPData);
+            // res.json(highBPData.rows);
         } else {
             res.status(404).json({ error: "No data found for this user" });
         }
@@ -312,8 +317,12 @@ app.put("/highBP/:id", async (req, res) => {
                 "UPDATE high_bp SET input_date = $1, input_time = $2, systolic = $3, dystolic = $4, pulse_rate = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *", 
                 [input_date, input_time, systolic, dystolic, pulse_rate, id]
             );
+
+            const formattedDateUpdatedPost = updatedPost.rows.map((row) => ({
+                ...row, input_date: row.input_date.toISOString().split("T")[0]
+            }));
     
-            res.json(updatedPost.rows[0]);
+            res.json(formattedDateUpdatedPost[0]);
         } else {
             res.status(400).json({ error: "High blood pressure post not found" });
         }
