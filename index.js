@@ -277,7 +277,7 @@ app.post("/highBP/user/:id", async (req, res) => {
                 [id, input_date, input_time, systolic, dystolic, pulse_rate]
             );
 
-            const formattedDatePost = post.rows[0].map((row) => ({
+            const formattedDatePost = post.rows.map((row) => ({
                 ...row, input_date: row.input_date.toISOString().split("T")[0]
             }));
     
